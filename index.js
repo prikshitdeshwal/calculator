@@ -4,41 +4,14 @@ let previousInput = null;
 let operator = null;
 let isNewNumber = true; // Flag to start a new number after an operator or equals
 
-// DOM elements
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  console.error('Root element not found.');
-}
-
-const createCalculatorUI = () => {
-  const calculatorDiv = document.createElement('div');
-  calculatorDiv.className = 'calculator';
-  calculatorDiv.setAttribute('role', 'application');
-  calculatorDiv.setAttribute('aria-label', 'Calculator');
-
-  const displayDiv = document.createElement('div');
-  displayDiv.className = 'display';
-  displayDiv.setAttribute('role', 'status');
-  displayDiv.setAttribute('aria-live', 'polite');
-  displayDiv.textContent = currentInput;
-
-  const buttonsGridDiv = document.createElement('div');
-  buttonsGridDiv.className = 'buttons-grid';
-
-  calculatorDiv.appendChild(displayDiv);
-  calculatorDiv.appendChild(buttonsGridDiv);
-
-  if (rootElement) {
-    rootElement.appendChild(calculatorDiv);
-  }
-
-  return { displayDiv, buttonsGridDiv };
-};
-
-const { displayDiv, buttonsGridDiv } = createCalculatorUI();
+// DOM elements - these will be set inside DOMContentLoaded
+let displayDiv;
+let buttonsGridDiv;
 
 const updateDisplay = () => {
-  displayDiv.textContent = currentInput;
+  if (displayDiv) {
+    displayDiv.textContent = currentInput;
+  }
 };
 
 const handleNumberClick = (num) => {
@@ -134,38 +107,71 @@ const handleClearClick = () => {
   updateDisplay();
 };
 
-// Button definitions
-const buttons = [
-  { value: 'C', className: 'clear', handler: handleClearClick },
-  { value: '/', className: 'operator', handler: () => handleOperatorClick('/') },
-  { value: '*', className: 'operator', handler: () => handleOperatorClick('*') },
-  { value: '-', className: 'operator', handler: () => handleOperatorClick('-') },
+document.addEventListener('DOMContentLoaded', () => {
+  const rootElement = document.getElementById('root');
+  if (!rootElement) {
+    console.error('Root element not found.');
+    return;
+  }
 
-  { value: '7', className: '', handler: () => handleNumberClick('7') },
-  { value: '8', className: '', handler: () => handleNumberClick('8') },
-  { value: '9', className: '', handler: () => handleNumberClick('9') },
-  { value: '+', className: 'operator', handler: () => handleOperatorClick('+') },
+  const createCalculatorUI = () => {
+    const calculatorDiv = document.createElement('div');
+    calculatorDiv.className = 'calculator';
+    calculatorDiv.setAttribute('role', 'application');
+    calculatorDiv.setAttribute('aria-label', 'Calculator');
 
-  { value: '4', className: '', handler: () => handleNumberClick('4') },
-  { value: '5', className: '', handler: () => handleNumberClick('5') },
-  { value: '6', className: '', handler: () => handleNumberClick('6') },
-  { value: '0', className: '', handler: () => handleNumberClick('0') }, // Moved 0 here for typical layout
+    displayDiv = document.createElement('div'); // Assign to global displayDiv
+    displayDiv.className = 'display';
+    displayDiv.setAttribute('role', 'status');
+    displayDiv.setAttribute('aria-live', 'polite');
+    displayDiv.textContent = currentInput;
 
-  { value: '1', className: '', handler: () => handleNumberClick('1') },
-  { value: '2', className: '', handler: () => handleNumberClick('2') },
-  { value: '3', className: '', handler: () => handleNumberClick('3') },
-  { value: '.', className: '', handler: handleDecimalClick },
-  { value: '=', className: 'equals', handler: handleEqualsClick },
-];
+    buttonsGridDiv = document.createElement('div'); // Assign to global buttonsGridDiv
+    buttonsGridDiv.className = 'buttons-grid';
 
-// Dynamically create and append buttons
-buttons.forEach(btn => {
-  const buttonElement = document.createElement('button');
-  buttonElement.textContent = btn.value;
-  buttonElement.className = `button ${btn.className}`;
-  buttonElement.addEventListener('click', btn.handler);
-  buttonsGridDiv.appendChild(buttonElement);
+    calculatorDiv.appendChild(displayDiv);
+    calculatorDiv.appendChild(buttonsGridDiv);
+
+    rootElement.appendChild(calculatorDiv);
+
+    return { displayDiv, buttonsGridDiv };
+  };
+
+  createCalculatorUI(); // Call it here
+
+  // Button definitions
+  const buttons = [
+    { value: 'C', className: 'clear', handler: handleClearClick },
+    { value: '/', className: 'operator', handler: () => handleOperatorClick('/') },
+    { value: '*', className: 'operator', handler: () => handleOperatorClick('*') },
+    { value: '-', className: 'operator', handler: () => handleOperatorClick('-') },
+
+    { value: '7', className: '', handler: () => handleNumberClick('7') },
+    { value: '8', className: '', handler: () => handleNumberClick('8') },
+    { value: '9', className: '', handler: () => handleNumberClick('9') },
+    { value: '+', className: 'operator', handler: () => handleOperatorClick('+') },
+
+    { value: '4', className: '', handler: () => handleNumberClick('4') },
+    { value: '5', className: '', handler: () => handleNumberClick('5') },
+    { value: '6', className: '', handler: () => handleNumberClick('6') },
+    { value: '0', className: '', handler: () => handleNumberClick('0') }, // Moved 0 here for typical layout
+
+    { value: '1', className: '', handler: () => handleNumberClick('1') },
+    { value: '2', className: '', handler: () => handleNumberClick('2') },
+    { value: '3', className: '', handler: () => handleNumberClick('3') },
+    { value: '.', className: '', handler: handleDecimalClick },
+    { value: '=', className: 'equals', handler: handleEqualsClick },
+  ];
+
+  // Dynamically create and append buttons
+  buttons.forEach(btn => {
+    const buttonElement = document.createElement('button');
+    buttonElement.textContent = btn.value;
+    buttonElement.className = `button ${btn.className}`;
+    buttonElement.addEventListener('click', btn.handler);
+    buttonsGridDiv.appendChild(buttonElement);
+  });
+
+  // Initial display update
+  updateDisplay();
 });
-
-// Initial display update
-updateDisplay();
